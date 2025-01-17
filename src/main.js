@@ -9,6 +9,11 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 import { definePreset } from '@primevue/themes';
 import 'primeicons/primeicons.css'
+import ToastService from 'primevue/toastservice'; // las alertas toast, también importar el componente <Toast /> en el App.vue
+import ConfirmationService from 'primevue/confirmationservice'
+import DialogService from 'primevue/dialogservice'
+
+
 
 // AXIOS
 import axios from 'axios'
@@ -50,7 +55,9 @@ app.use(PrimeVue, {
     }
  });
 app.use(VueAxios, axios)
-
+app.use(ToastService)
+app.use(ConfirmationService)
+app.use(DialogService)
 
 
 

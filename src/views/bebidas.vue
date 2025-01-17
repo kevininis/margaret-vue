@@ -5,9 +5,8 @@
     <br>
     <br>
 
-
-    <div>
-        <div class="card">
+    <div class="grid">
+        <div class="card col-6">
             <Toolbar class="mb-6">
                 <template #start>
                     <Button label="Nuevo" icon="pi pi-plus" class="mr-2" @click="AbrirNueva()" />
@@ -23,8 +22,8 @@
         </div>
         <DataTable ref="dt"
                 v-model:selection="productosSeleccionados"
-                :value="productos"
-                dataKey="id"
+                :value="products"
+                dataKey="idBebida"
                 :paginator="true"
                 :rows="10"
                 :filters="filtros"
@@ -44,87 +43,57 @@
                         </IconField>
                     </div>
                 </template>
-            
-            
+
+                <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+                <Column field="idBebida" header="No." sortable style="min-width: 4rem"></Column>
+                <Column field="nombreBebida" header="Nombre" sortable style="min-width: 10rem"></Column>
+                <Column field="descripcionBebida" header="Descripción" sortable style="min-width: 20rem"></Column>
+                <Column field="precioBebida" header="Precio" sortable style="min-width: 10rem">
+                    <template #body="products">
+                        {{ formatCurrency(parseFloat(products.data.precioBebida)) }}
+                    </template>
+                </Column>
+                <Column field="categorias.nombreCategoria" header="Categoria" sortable style="min-width: 12rem"></Column>
+                <Column :exportable="false" style="min-width: 12rem">
+                    <template #body="products">
+                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(products.data)" />
+                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(products.data)" />
+                    </template>
+                </Column>
         </DataTable>
 
-        <Dialog v-model:visible="NuevoProducto" :style="{ width: '450px' }" header="Nuevo Producto" :modal="true">
+
+        <!-- MODAL DE NUEVO PRODUCTO -->
+        <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Nuevo Producto" :modal="true">
             <div class="flex flex-col gap-6">
-                <div>
+                <div> 
                     <label for="Nombre" class="block font-bold mb-3">Nombre</label>
-                    <InputText id="name" v-model.trim="producto.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
-                    <small v-if="submitted && !product.name" class="text-red-500">Name is required.</small>
+                    <InputText id="name" v-model="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
+                    <small v-if="submitted && !product.name" class="text-red-500">El nombre es obligatorio.</small>
                 </div>
                 <div>
                     <label for="description" class="block font-bold mb-3">Description</label>
                     <Textarea id="description" v-model="product.description" required="true" rows="3" cols="20" fluid />
                 </div>
-
-
                 <div>
-                    <span class="block font-bold mb-4">Category</span>
-                    <div class="grid grid-cols-12 gap-4">
-                        <div class="flex items-center gap-2 col-span-6">
-                            <RadioButton id="category1" v-model="product.category" name="category" value="Accessories" />
-                            <label for="category1">Accessories</label>
-                        </div>
-                        <div class="flex items-center gap-2 col-span-6">
-                            <RadioButton id="category2" v-model="product.category" name="category" value="Clothing" />
-                            <label for="category2">Clothing</label>
-                        </div>
-                        <div class="flex items-center gap-2 col-span-6">
-                            <RadioButton id="category3" v-model="product.category" name="category" value="Electronics" />
-                            <label for="category3">Electronics</label>
-                        </div>
-                        <div class="flex items-center gap-2 col-span-6">
-                            <RadioButton id="category4" v-model="product.category" name="category" value="Fitness" />
-                            <label for="category4">Fitness</label>
-                        </div>
-                    </div>
+                    <label for="categoria" class="block font-bold mb-3">Categorías</label>
+                    <Select id="categoria" v-model="product.category" :options="categories" optionValue="idCategoria" optionLabel="nombreCategoria" placeholder="Selecciona una categoría" required="true" :invalid="submitted && !product.category" fluid checkmark ></Select>
+                    <small v-if="submitted && !product.category" class="text-red-500">La categoría es obligatoria.</small>
                 </div>
-
-                <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-6">
-                        <label for="price" class="block font-bold mb-3">Price</label>
-                        <InputNumber id="price" v-model="product.price" mode="currency" currency="USD" locale="en-US" fluid />
-                    </div>
-                    <div class="col-span-6">
-                        <label for="quantity" class="block font-bold mb-3">Quantity</label>
-                        <InputNumber id="quantity" v-model="product.quantity" integeronly fluid />
-                    </div>
+                <div class="col-span-6">
+                        <label for="price" class="block font-bold mb-3">Precio</label>
+                        <InputNumber id="price" v-model="product.price" mode="currency" currency="GTQ" locale="es-GT" required="true" :invalid="submitted && !product.price" fluid />
+                        <small v-if="submitted && !product.price" class="text-red-500">El precio es obligatorio.</small>    
                 </div>
+                
             </div>
 
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="CerrarDialogo()" />
-                <Button label="Save" icon="pi pi-check" @click="GuardarProducto()" />
+                <Button label="Cancelar" icon="pi pi-times" text @click="hideDialog()" />
+                <Button label="Guardar" icon="pi pi-check" @click="GuardarProducto()" />
             </template>
         </Dialog>
     </div>
-
-
-
-
-
-
-
-<hr>
-
-
-<!-- 
-<DataTable :value="products" ref="dt" tableStyle="min-width: 50rem" >
-    <template #header>
-        <div class="text-end pb-4">
-            <Button icon="pi pi-external-link" label="Export" @click="exportPDF($event)" />
-        </div>
-    </template>
-    
-    <Column field="idBebida" header="No." sortable ></Column>
-    <Column field="nombreBebida" header="Nombre" sortable></Column>
-    <Column field="descripcionBebida" header="Descripción" sortable></Column>
-    <Column field="precioBebida" header="Precio" sortable></Column>
-    <Column field="categorias.nombreCategoria" header="Categoria" sortable></Column>
-</DataTable> -->
 </template>
 
 
@@ -134,12 +103,13 @@ export default {
     
     data () {
         return {
-            NuevoProducto: false,
             submitted: false,
-            productos : null,
-            producto : {},
+            products : null,
+            product : {},
             filtros : {},
             productosSeleccionados : null,
+            productDialog : false,
+            categories : null,
         }
     },
     created() {
@@ -147,6 +117,7 @@ export default {
     },
     mounted() {
         this.ListaBebidas();
+        this.ListaCategorias();
     },
     methods: {
         ListaBebidas () {
@@ -154,25 +125,51 @@ export default {
             .then((response) => {
                 if (response.status == 200) {
                     this.products = response.data.ListaBebidas
-                    console.log(response.data.ListaBebidas)
+                }
+            })
+        },
+        ListaCategorias () {
+            this.axios.get('listaCategorias')
+            .then((response) => {
+                if (response.status == 200) {
+                    this.categories = response.data.ListaCategorias
                 }
             })
         },
         AbrirNueva () {
             this.product = {};
             this.submitted = false;
-            this.NuevoProducto = true;
+            this.productDialog = true;
         },  
-        CerrarDialogo() {
-            this.NuevoProducto = false;
+        hideDialog() {
+            this.productDialog = false;
             this.submitted = false;
         },
         GuardarProducto () {
-
+            this.submitted = true;
+            if (this.product?.name && this.product?.category) {
+                
+                this.axios.post('nuevaBebida', this.product)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.$toast.add({ 
+                            severity: 'success', 
+                            summary: 'Operación exitosa', 
+                            detail: response.data.message, 
+                            life: 3000 
+                        });
+                        this.productDialog = false;
+                        this.product = {};
+                        this.ListaBebidas();
+                    }
+                })
+            }
         },
-
-
-
+        formatCurrency(value) {
+            if(value)
+				return value.toLocaleString('es-GT', {style: 'currency', currency: 'GTQ'});
+			return;
+        },
         exportCSV () {
             this.$refs.dt.exportCSV();
         },
@@ -181,6 +178,7 @@ export default {
                 'global': {value: null},
             }
         },
+
     }
 }
 
