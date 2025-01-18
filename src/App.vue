@@ -1,12 +1,12 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import Menu from './components/menu.vue'
+import MenuKevh from './components/menukevh.vue'
 
 
 </script>
 
 <template>
-  <Menu />
+  <Menukevh />
   <Toast />
   <RouterView />
 </template>

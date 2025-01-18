@@ -68,7 +68,7 @@
             <div class="flex flex-col gap-6">
                 <div> 
                     <label for="Nombre" class="block font-bold mb-3">Nombre</label>
-                    <InputText id="name" v-model="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
+                    <InputText id="name" v-model="product.name" required="true" autocomplete="off" autofocus :invalid="submitted && !product.name" fluid />
                     <small v-if="submitted && !product.name" class="text-red-500">El nombre es obligatorio.</small>
                 </div>
                 <div>
