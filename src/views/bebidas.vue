@@ -101,11 +101,21 @@
         </Dialog>
 
         <!-- MODAL AGREGAR NUEVA CATEGORIA -->
-        <Dialog v-model:visible="newCategory">
-            hola
+        <Dialog v-model:visible="newCategoryDialog" :style="{ width: '450px' }">
+            <div class="flex flex-col gap-6">
+                <div> 
+                    <label for="Nombre" class="block font-bold mb-3">Nombre</label>
+                    <InputText id="name" v-model="newCategory.name" required="true" autocomplete="off" autofocus :invalid="submitted && !newCategory.name" fluid />
+                    <small v-if="submitted && !newCategory.name" class="text-red-500">El nombre es obligatorio.</small>
+                </div>
+                <div>
+                    <label for="description" class="block font-bold mb-3">Description</label>
+                    <Textarea id="description" v-model="newCategory.description" required="true" rows="3" cols="20" fluid />
+                </div>
+            </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="cancelNewCategory()" />
-                <Button label="Yes" icon="pi pi-check" />
+                <Button label="Yes" icon="pi pi-check" @click="saveNewCategory()" />
             </template>
         </Dialog>
 
@@ -156,7 +166,8 @@ export default {
             selectProducts : {
                 selectedProducts : null
             },
-            newCategory : false
+            newCategoryDialog : false,
+            newCategory : {}
         }
     },
     created() {
@@ -216,20 +227,41 @@ export default {
                             life: 3000 });
         },
         openNewCategory () {
-            this.newCategory = true;
+            this.newCategoryDialog = true;
             this.productDialog = false;
         },
         cancelNewCategory () {
-            this.newCategory = false;
+            this.newCategoryDialog = false;
             this.productDialog = true;
         }, 
         saveNewCategory () {
+            this.submitted = true;
+            if (this.newCategory?.name) {
+                this.axios.post('nuevaCategoria', this.newCategory)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.$toast.add({ 
+                            severity: 'success', 
+                            summary: 'Operación exitosa', 
+                            detail: response.data.message, 
+                            life: 3000 
+                        });
+                        this.newCategoryDialog = false;
+                        this.productDialog = true;
+                        this.ListaCategorias();
+                        this.newCategory = {};
+                    }
+                })
+                .catch (err => {
+                    this.$toast.add({
+                        severity : 'error',
+                        summary : 'Operación fallida',
+                        detail :  err,// response.data.message,
+                        life : 3000
+                    })
+                })
+            }
 
-
-
-
-
-            
         },
         saveProduct () {
             this.submitted = true;
