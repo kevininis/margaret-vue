@@ -7,6 +7,9 @@ import App from './App.vue'
 // PRIMEVUE
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
+import Material from '@primevue/themes/material'
+import Lara from '@primevue/themes/lara'
+import Nora from '@primevue/themes/Nora'
 import { definePreset } from '@primevue/themes';
 import 'primeicons/primeicons.css'
 import ToastService from 'primevue/toastservice'; // las alertas toast, también importar el componente <Toast /> en el App.vue

@@ -1,12 +1,16 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import MenuKevh from './components/menukevh.vue'
+import MenuKevh from './views/menukevh.vue'
+import SidebarMenu from './views/sidebarMenu.vue'
 
 
 </script>
 
 <template>
-  <Menukevh />
+  <MenuKevh />
+  <div class="grid">
+    <!-- <SidebarMenu /> -->
+    <RouterView />
+  </div>
   <Toast />
-  <RouterView />
 </template>
